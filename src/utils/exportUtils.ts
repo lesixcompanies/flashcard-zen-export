@@ -5,7 +5,8 @@ export const generateExportCode = (cards: FlashcardData[], customization: Custom
   const cardsJson = JSON.stringify(cards);
   const configJson = JSON.stringify(customization);
 
-  return `<!DOCTYPE html>
+  // Generate the complete flashcard HTML content
+  const flashcardContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -400,4 +401,18 @@ export const generateExportCode = (cards: FlashcardData[], customization: Custom
     </script>
 </body>
 </html>`;
+
+  // Encode the content for the data URL
+  const encodedContent = encodeURIComponent(flashcardContent);
+
+  // Return the iframe-based code that GoHighLevel won't strip
+  return `<div style="width: 100%; height: 600px; border: none; border-radius: 8px; overflow: hidden;">
+    <iframe 
+        src="data:text/html;charset=utf-8,${encodedContent}"
+        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen>
+    </iframe>
+</div>`;
 };
