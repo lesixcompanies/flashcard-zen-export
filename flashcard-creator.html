@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .input, .textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .input:focus, .textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .cards-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .card-item {
+            border: 2px solid #e5e7eb;
+            border-left: 4px solid #3b82f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #f9fafb;
+        }
+
+        .card-item-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-number {
+            font-size: 0.875rem;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .counter {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .export-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .export-code {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-item-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Flashcard Creator</h1>
+            <p>Create and manage your flashcards, then export them for GoHighLevel</p>
+        </div>
+
+        <div class="grid grid-2">
+            <!-- Add Single Card -->
+            <div class="card">
+                <div class="card-header">
+                    ➕ Add Single Card
+                </div>
+                <div class="form-group">
+                    <label class="label" for="term">Term / Question</label>
+                    <input class="input" id="term" placeholder="Enter the front of the card...">
+                </div>
+                <div class="form-group">
+                    <label class="label" for="definition">Definition / Answer</label>
+                    <textarea class="textarea" id="definition" placeholder="Enter the back of the card..."></textarea>
+                </div>
+                <button class="btn btn-full" onclick="addCard()">
+                    ➕ Add Card
+                </button>
+            </div>
+
+            <!-- Bulk Import -->
+            <div class="card">
+                <div class="card-header">
+                    📤 Bulk Import Cards
+                </div>
+                <div class="form-group">
+                    <label class="label" for="bulk">Paste Cards (Tab or Comma Separated)</label>
+                    <textarea class="textarea" id="bulk" placeholder="Term1	Definition1&#10;Term2	Definition2&#10;or&#10;Term1,Definition1&#10;Term2,Definition2"></textarea>
+                </div>
+                <button class="btn btn-outline btn-full" onclick="processBulkImport()">
+                    📤 Import Cards
+                </button>
+            </div>
+        </div>
+
+        <!-- Card Management -->
+        <div class="card">
+            <div class="card-header">
+                📚 Your Cards <span class="counter" id="cardCounter">0</span>
+                <div style="margin-left: auto;">
+                    <button class="btn btn-danger" onclick="clearAllCards()" id="clearBtn" style="display: none;">
+                        🗑️ Clear All
+                    </button>
+                </div>
+            </div>
+            
+            <div id="cardsList" class="cards-list">
+                <div class="empty-state" id="emptyState">
+                    <p style="font-size: 1.2rem; margin-bottom: 8px;">No cards created yet</p>
+                    <p>Add your first card using the form above</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <div class="card">
+                <div class="card-header">
+                    🚀 Export for GoHighLevel
+                </div>
+                <div style="background: #dbeafe; border: 2px solid #93c5fd; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                    <h4 style="color: #1e40af; margin-bottom: 8px;">Instructions:</h4>
+                    <ol style="color: #1e40af; font-size: 14px; line-height: 1.6;">
+                        <li>Click "Generate Export Code" below</li>
+                        <li>Copy the generated HTML code</li>
+                        <li>Go to your GoHighLevel course lesson</li>
+                        <li>Add a "Custom Code" element</li>
+                        <li>Paste the code and save</li>
+                    </ol>
+                </div>
+                
+                <button class="btn btn-full" onclick="generateExportCode()" id="exportBtn" disabled>
+                    🔧 Generate Export Code
+                </button>
+                
+                <div id="exportResult" style="display: none; margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <label class="label">Generated HTML Code (<span id="codeSize">0</span>KB)</label>
+                        <button class="btn btn-outline" onclick="copyToClipboard()">
+                            📋 Copy Code
+                        </button>
+                    </div>
+                    <div class="export-code" id="exportCode"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cards = [];
+
+        function updateUI() {
+            const counter = document.getElementById('cardCounter');
+            const cardsList = document.getElementById('cardsList');
+            const emptyState = document.getElementById('emptyState');
+            const clearBtn = document.getElementById('clearBtn');
+            const exportBtn = document.getElementById('exportBtn');
+
+            counter.textContent = cards.length;
+            
+            if (cards.length === 0) {
+                emptyState.style.display = 'block';
+                clearBtn.style.display = 'none';
+                exportBtn.disabled = true;
+                cardsList.innerHTML = '<div class="empty-state" id="emptyState"><p style="font-size: 1.2rem; margin-bottom: 8px;">No cards created yet</p><p>Add your first card using the form above</p></div>';
+            } else {
+                emptyState.style.display = 'none';
+                clearBtn.style.display = 'inline-flex';
+                exportBtn.disabled = false;
+                renderCards();
+            }
+        }
+
+        function renderCards() {
+            const cardsList = document.getElementById('cardsList');
+            cardsList.innerHTML = cards.map((card, index) => `
+                <div class="card-item">
+                    <div class="card-item-grid">
+                        <div>
+                            <label class="label" style="color: #3b82f6;">Term #${index + 1}</label>
+                            <input class="input" value="${escapeHtml(card.term)}" onchange="updateCard('${card.id}', 'term', this.value)">
+                        </div>
+                        <div>
+                            <label class="label" style="color: #7c3aed;">Definition</label>
+                            <textarea class="textarea" onchange="updateCard('${card.id}', 'definition', this.value)">${escapeHtml(card.definition)}</textarea>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <span class="card-number">Card ${index + 1}</span>
+                        <button class="btn btn-danger" onclick="deleteCard('${card.id}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function addCard() {
+            const term = document.getElementById('term').value.trim();
+            const definition = document.getElementById('definition').value.trim();
+
+            if (!term || !definition) {
+                alert('Both term and definition are required');
+                return;
+            }
+
+            const newCard = {
+                id: Date.now().toString(),
+                term: term,
+                definition: definition
+            };
+
+            cards.push(newCard);
+            document.getElementById('term').value = '';
+            document.getElementById('definition').value = '';
+            updateUI();
+            alert('Card added successfully!');
+        }
+
+        function deleteCard(id) {
+            cards = cards.filter(card => card.id !== id);
+            updateUI();
+            alert('Card deleted successfully!');
+        }
+
+        function updateCard(id, field, value) {
+            cards = cards.map(card => 
+                card.id === id ? { ...card, [field]: value } : card
+            );
+        }
+
+        function processBulkImport() {
+            const bulkText = document.getElementById('bulk').value.trim();
+            
+            if (!bulkText) return;
+
+            const lines = bulkText.split('\n').filter(line => line.trim());
+            const newCards = [];
+
+            lines.forEach(line => {
+                const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+                if (parts.length >= 2) {
+                    newCards.push({
+                        id: Date.now().toString() + Math.random(),
+                        term: parts[0].trim(),
+                        definition: parts[1].trim()
+                    });
+                }
+            });
+
+            if (newCards.length > 0) {
+                cards = [...cards, ...newCards];
+                document.getElementById('bulk').value = '';
+                updateUI();
+                alert(`Imported ${newCards.length} cards successfully!`);
+            } else {
+                alert('No valid cards found. Use format: Term\tDefinition or Term,Definition');
+            }
+        }
+
+        function clearAllCards() {
+            if (confirm('Are you sure you want to delete all cards?')) {
+                cards = [];
+                updateUI();
+                alert('All cards cleared!');
+            }
+        }
+
+        function generateExportCode() {
+            if (cards.length === 0) {
+                alert('Please create some cards before exporting');
+                return;
+            }
+
+            const customization = {
+                colors: {
+                    primary: '#4f46e5',
+                    secondary: '#7c3aed',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    text: '#ffffff',
+                    cardBg: '#ffffff',
+                    cardText: '#1f2937'
+                },
+                typography: {
+                    fontFamily: 'Arial, sans-serif',
+                    termSize: '1.5rem',
+                    definitionSize: '1.2rem'
+                },
+                dimensions: {
+                    cardHeight: '300px',
+                    borderRadius: '12px'
+                },
+                features: {
+                    showProgress: true,
+                    showShuffle: true,
+                    showCounter: true
+                }
+            };
+
+            const code = generateFlashcardCode(cards, customization);
+            
+            document.getElementById('exportResult').style.display = 'block';
+            document.getElementById('exportCode').textContent = code;
+            document.getElementById('codeSize').textContent = Math.round(code.length / 1024);
+            
+            alert('Export code generated successfully!');
+        }
+
+        function generateFlashcardCode(cards, customization) {
+            const cardsJson = JSON.stringify(cards);
+            const configJson = JSON.stringify(customization);
+
+            return `<div style="width: 100%; height: 750px; border: none; border-radius: 8px; overflow: hidden;">
+    <iframe 
+        src="data:text/html;charset=utf-8,${encodeURIComponent(generateFlashcardHTML(cards, customization))}"
+        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen>
+    </iframe>
+</div>`;
+        }
+
+        function generateFlashcardHTML(cards, customization) {
+            const cardsJson = JSON.stringify(cards);
+
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Flashcards</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: ${customization.typography.fontFamily};
+            background: ${customization.colors.background};
+            color: ${customization.colors.text};
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .flashcard-container {
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .header .counter {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .progress-container {
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .card-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 600px;
+            height: ${customization.dimensions.cardHeight};
+            cursor: pointer;
+            user-select: none;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: ${customization.colors.cardBg};
+            color: ${customization.colors.cardText};
+            border-radius: ${customization.dimensions.borderRadius};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .card-content {
+            width: 100%;
+        }
+        .card-term {
+            font-size: ${customization.typography.termSize};
+            font-weight: 600;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        .card-definition {
+            font-size: ${customization.typography.definitionSize};
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        .card-hint {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-top: 1rem;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-width: 100px;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .keyboard-hints {
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .flashcard-container { padding: 1rem 0.5rem; }
+            .header h1 { font-size: 1.5rem; }
+            .card-container { height: 250px; }
+            .card-face { padding: 1.5rem; }
+            .controls { gap: 0.5rem; }
+            .btn { padding: 0.6rem 1rem; font-size: 0.8rem; min-width: 80px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="flashcard-container">
+        <div class="header">
+            <h1>Flashcard Study</h1>
+            <div class="counter" id="counter">Card 1 of 0</div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="card-container" id="cardContainer">
+                <div class="card-inner" id="cardInner">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <div class="card-term" id="cardTerm">Loading...</div>
+                            <div class="card-hint" style="color: ${customization.colors.primary}">
+                                Click to reveal answer
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="card-definition" id="cardDefinition">Loading...</div>
+                            <div class="card-hint" style="color: ${customization.colors.secondary}">
+                                Click to see question
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="prevBtn">Previous</button>
+            <button class="btn" id="nextBtn">Next</button>
+            <button class="btn" id="shuffleBtn">Shuffle</button>
+            <button class="btn" id="restartBtn">Restart</button>
+        </div>
+
+        <div class="keyboard-hints">
+            Use ← → arrow keys to navigate • Space to flip cards
+        </div>
+    </div>
+
+    <script>
+        const flashcards = ${cardsJson};
+        let currentIndex = 0;
+        let isFlipped = false;
+        let studyCards = [...flashcards];
+        
+        const cardContainer = document.getElementById('cardContainer');
+        const cardInner = document.getElementById('cardInner');
+        const cardTerm = document.getElementById('cardTerm');
+        const cardDefinition = document.getElementById('cardDefinition');
+        const counter = document.getElementById('counter');
+        const progressFill = document.getElementById('progressFill');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        
+        function init() {
+            if (studyCards.length === 0) {
+                cardTerm.textContent = 'No cards available';
+                cardDefinition.textContent = 'Please add some cards to study';
+                return;
+            }
+            updateCard();
+            updateUI();
+            bindEvents();
+        }
+        
+        function updateCard() {
+            if (studyCards.length === 0) return;
+            const card = studyCards[currentIndex];
+            cardTerm.textContent = card.term;
+            cardDefinition.textContent = card.definition;
+            isFlipped = false;
+            cardInner.classList.remove('flipped');
+        }
+        
+        function updateUI() {
+            if (studyCards.length === 0) return;
+            counter.textContent = \`Card \${currentIndex + 1} of \${studyCards.length}\`;
+            const progress = ((currentIndex + 1) / studyCards.length) * 100;
+            progressFill.style.width = progress + '%';
+            const hasMultipleCards = studyCards.length > 1;
+            prevBtn.disabled = !hasMultipleCards;
+            nextBtn.disabled = !hasMultipleCards;
+            shuffleBtn.disabled = !hasMultipleCards;
+        }
+        
+        function nextCard() {
+            if (studyCards.length <= 1) return;
+            currentIndex = (currentIndex + 1) % studyCards.length;
+            updateCard();
+            updateUI();
+        }
+        
+        function prevCard() {
+            if (studyCards.length <= 1) return;
+            currentIndex = (currentIndex - 1 + studyCards.length) % studyCards.length;
+            updateCard();
+            updateUI();
+        }
+        
+        function flipCard() {
+            isFlipped = !isFlipped;
+            cardInner.classList.toggle('flipped', isFlipped);
+        }
+        
+        function shuffleCards() {
+            studyCards = [...studyCards].sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            updateCard();
+            updateUI();
+        }
+        
+        function restart() {
+            currentIndex = 0;
+            updateCard();
+            updateUI();
+        }
+        
+        function bindEvents() {
+            cardContainer.addEventListener('click', flipCard);
+            prevBtn.addEventListener('click', prevCard);
+            nextBtn.addEventListener('click', nextCard);
+            shuffleBtn.addEventListener('click', shuffleCards);
+            restartBtn.addEventListener('click', restart);
+            
+            document.addEventListener('keydown', function(e) {
+                switch(e.code) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        prevCard();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        nextCard();
+                        break;
+                    case 'Space':
+                        e.preventDefault();
+                        flipCard();
+                        break;
+                }
+            });
+        }
+        
+        init();
+    </script>
+</body>
+</html>`;
+        }
+
+        function copyToClipboard() {
+            const code = document.getElementById('exportCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy. Please manually select and copy the code.');
+            });
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
