@@ -1,10 +1,11 @@
 
 export const generateCreatorExportCode = (): string => {
-  return `<!DOCTYPE html>
-<html lang="en">
+  return `<iframe 
+  srcdoc="<!DOCTYPE html>
+<html lang='en'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Flashcard Creator & Export System</title>
     <style>
         * {
@@ -223,95 +224,95 @@ export const generateCreatorExportCode = (): string => {
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <div class='container'>
+        <div class='header'>
             <h1>✨ Flashcard Creator & Export System</h1>
             <p>Create, customize, and export your study flashcards</p>
         </div>
         
-        <div class="content">
-            <div class="two-column">
+        <div class='content'>
+            <div class='two-column'>
                 <div>
-                    <div class="section">
+                    <div class='section'>
                         <h2>📝 Create Flashcard</h2>
-                        <div class="form-group">
-                            <label for="frontText">Front Text:</label>
-                            <textarea id="frontText" rows="3" placeholder="Enter the question or prompt..."></textarea>
+                        <div class='form-group'>
+                            <label for='frontText'>Front Text:</label>
+                            <textarea id='frontText' rows='3' placeholder='Enter the question or prompt...'></textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="backText">Back Text:</label>
-                            <textarea id="backText" rows="3" placeholder="Enter the answer or explanation..."></textarea>
+                        <div class='form-group'>
+                            <label for='backText'>Back Text:</label>
+                            <textarea id='backText' rows='3' placeholder='Enter the answer or explanation...'></textarea>
                         </div>
-                        <button class="btn" onclick="addCard()">Add Card</button>
-                        <button class="btn btn-secondary" onclick="importCards()">Bulk Import</button>
+                        <button class='btn' onclick='addCard()'>Add Card</button>
+                        <button class='btn btn-secondary' onclick='importCards()'>Bulk Import</button>
                     </div>
                     
-                    <div class="section">
+                    <div class='section'>
                         <h2>🎨 Customize Style</h2>
-                        <div class="form-group">
-                            <label for="bgColor">Background Color:</label>
-                            <select id="bgColor" onchange="updatePreview()">
-                                <option value="bg-white">White</option>
-                                <option value="bg-blue-50">Light Blue</option>
-                                <option value="bg-green-50">Light Green</option>
-                                <option value="bg-purple-50">Light Purple</option>
-                                <option value="bg-yellow-50">Light Yellow</option>
+                        <div class='form-group'>
+                            <label for='bgColor'>Background Color:</label>
+                            <select id='bgColor' onchange='updatePreview()'>
+                                <option value='bg-white'>White</option>
+                                <option value='bg-blue-50'>Light Blue</option>
+                                <option value='bg-green-50'>Light Green</option>
+                                <option value='bg-purple-50'>Light Purple</option>
+                                <option value='bg-yellow-50'>Light Yellow</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="textColor">Text Color:</label>
-                            <select id="textColor" onchange="updatePreview()">
-                                <option value="text-gray-800">Dark Gray</option>
-                                <option value="text-blue-800">Blue</option>
-                                <option value="text-green-800">Green</option>
-                                <option value="text-purple-800">Purple</option>
+                        <div class='form-group'>
+                            <label for='textColor'>Text Color:</label>
+                            <select id='textColor' onchange='updatePreview()'>
+                                <option value='text-gray-800'>Dark Gray</option>
+                                <option value='text-blue-800'>Blue</option>
+                                <option value='text-green-800'>Green</option>
+                                <option value='text-purple-800'>Purple</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="fontSize">Font Size:</label>
-                            <select id="fontSize" onchange="updatePreview()">
-                                <option value="text-base">Normal</option>
-                                <option value="text-lg">Large</option>
-                                <option value="text-xl">Extra Large</option>
+                        <div class='form-group'>
+                            <label for='fontSize'>Font Size:</label>
+                            <select id='fontSize' onchange='updatePreview()'>
+                                <option value='text-base'>Normal</option>
+                                <option value='text-lg'>Large</option>
+                                <option value='text-xl'>Extra Large</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 
                 <div>
-                    <div class="section">
+                    <div class='section'>
                         <h2>👀 Preview</h2>
-                        <div id="previewCard" class="preview-card" onclick="flipPreviewCard()">
-                            <div class="card-front">
-                                <h3>Click "Add Card" to see preview</h3>
+                        <div id='previewCard' class='preview-card' onclick='flipPreviewCard()'>
+                            <div class='card-front'>
+                                <h3>Click 'Add Card' to see preview</h3>
                                 <p>Front side will appear here</p>
                             </div>
-                            <div class="card-back">
+                            <div class='card-back'>
                                 <h3>Back Side</h3>
                                 <p>Answer will appear here</p>
                             </div>
                         </div>
-                        <p style="text-align: center; color: #6b7280;">Click the card to flip it</p>
+                        <p style='text-align: center; color: #6b7280;'>Click the card to flip it</p>
                     </div>
                 </div>
             </div>
             
-            <div class="section">
+            <div class='section'>
                 <h2>📚 Your Cards</h2>
-                <div id="cardsList" class="cards-container">
-                    <p style="text-align: center; color: #6b7280;">No cards created yet. Add your first card above!</p>
+                <div id='cardsList' class='cards-container'>
+                    <p style='text-align: center; color: #6b7280;'>No cards created yet. Add your first card above!</p>
                 </div>
             </div>
             
-            <div class="section">
+            <div class='section'>
                 <h2>🚀 Export Study Interface</h2>
-                <p style="margin-bottom: 15px; color: #6b7280;">Generate a complete study interface with all your cards:</p>
-                <button id="exportBtn" class="btn" onclick="generateExportCode()">Generate Export Code</button>
-                <div id="exportResult" class="export-result">
+                <p style='margin-bottom: 15px; color: #6b7280;'>Generate a complete study interface with all your cards:</p>
+                <button id='exportBtn' class='btn' onclick='generateExportCode()'>Generate Export Code</button>
+                <div id='exportResult' class='export-result'>
                     <h3>Your Export Code:</h3>
-                    <div id="exportCode" class="export-code"></div>
-                    <button class="btn btn-secondary" onclick="copyExportCode()">Copy Code</button>
-                    <p style="margin-top: 10px; font-size: 14px; color: #6b7280;">
+                    <div id='exportCode' class='export-code'></div>
+                    <button class='btn btn-secondary' onclick='copyExportCode()'>Copy Code</button>
+                    <p style='margin-top: 10px; font-size: 14px; color: #6b7280;'>
                         Copy this code and paste it into your website or learning platform.
                     </p>
                 </div>
@@ -396,16 +397,16 @@ export const generateCreatorExportCode = (): string => {
             const container = document.getElementById('cardsList');
             
             if (cards.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #6b7280;">No cards created yet. Add your first card above!</p>';
+                container.innerHTML = '<p style=\"text-align: center; color: #6b7280;\">No cards created yet. Add your first card above!</p>';
                 return;
             }
             
             container.innerHTML = cards.map(card => 
-                '<div class="card-item">' +
+                '<div class=\"card-item\">' +
                     '<h3>' + card.front + '</h3>' +
                     '<p>' + card.back + '</p>' +
-                    '<button class="btn btn-secondary" onclick="editCard(' + card.id + ')">Edit</button>' +
-                    '<button class="btn btn-danger" onclick="deleteCard(' + card.id + ')">Delete</button>' +
+                    '<button class=\"btn btn-secondary\" onclick=\"editCard(' + card.id + ')\">Edit</button>' +
+                    '<button class=\"btn btn-danger\" onclick=\"deleteCard(' + card.id + ')\">Delete</button>' +
                 '</div>'
             ).join('');
         }
@@ -443,15 +444,15 @@ export const generateCreatorExportCode = (): string => {
             const fontSize = document.getElementById('fontSize').value;
             
             const flashcardContent = '<!DOCTYPE html>' +
-'<html lang="en">' +
+'<html lang=\"en\">' +
 '<head>' +
-'    <meta charset="UTF-8">' +
-'    <meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+'    <meta charset=\"UTF-8\">' +
+'    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">' +
 '    <title>Study Flashcards</title>' +
 '    <style>' +
 '        * { margin: 0; padding: 0; box-sizing: border-box; }' +
 '        body { ' +
-'            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;' +
+'            font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;' +
 '            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);' +
 '            min-height: 100vh; padding: 20px;' +
 '        }' +
@@ -479,22 +480,22 @@ export const generateCreatorExportCode = (): string => {
 '    </style>' +
 '</head>' +
 '<body>' +
-'    <div class="container">' +
-'        <div class="header">' +
+'    <div class=\"container\">' +
+'        <div class=\"header\">' +
 '            <h1>📚 Study Time</h1>' +
 '            <p>Click cards to flip • Use buttons to navigate</p>' +
 '        </div>' +
-'        <div id="flashcard" class="flashcard ' + bgColor + ' ' + textColor + ' ' + fontSize + '" onclick="flipCard()">' +
-'            <div class="front"><h2 id="frontText"></h2></div>' +
-'            <div class="back"><h2 id="backText"></h2></div>' +
+'        <div id=\"flashcard\" class=\"flashcard ' + bgColor + ' ' + textColor + ' ' + fontSize + '\" onclick=\"flipCard()\">' +
+'            <div class=\"front\"><h2 id=\"frontText\"></h2></div>' +
+'            <div class=\"back\"><h2 id=\"backText\"></h2></div>' +
 '        </div>' +
-'        <div class="controls">' +
-'            <button class="btn" onclick="previousCard()">← Previous</button>' +
-'            <button class="btn" onclick="nextCard()">Next →</button>' +
-'            <button class="btn" onclick="shuffleCards()">🔀 Shuffle</button>' +
+'        <div class=\"controls\">' +
+'            <button class=\"btn\" onclick=\"previousCard()\">← Previous</button>' +
+'            <button class=\"btn\" onclick=\"nextCard()\">Next →</button>' +
+'            <button class=\"btn\" onclick=\"shuffleCards()\">🔀 Shuffle</button>' +
 '        </div>' +
-'        <div class="progress">' +
-'            <span id="progress">Card 1 of ' + cards.length + '</span>' +
+'        <div class=\"progress\">' +
+'            <span id=\"progress\">Card 1 of ' + cards.length + '</span>' +
 '        </div>' +
 '    </div>' +
 '    <script>' +
@@ -503,15 +504,15 @@ export const generateCreatorExportCode = (): string => {
 '        let isFlipped = false;' +
 '        ' +
 '        function showCard() {' +
-'            document.getElementById("frontText").textContent = cards[currentCard].front;' +
-'            document.getElementById("backText").textContent = cards[currentCard].back;' +
-'            document.getElementById("progress").textContent = "Card " + (currentCard + 1) + " of " + cards.length;' +
-'            document.getElementById("flashcard").classList.remove("flipped");' +
+'            document.getElementById(\"frontText\").textContent = cards[currentCard].front;' +
+'            document.getElementById(\"backText\").textContent = cards[currentCard].back;' +
+'            document.getElementById(\"progress\").textContent = \"Card \" + (currentCard + 1) + \" of \" + cards.length;' +
+'            document.getElementById(\"flashcard\").classList.remove(\"flipped\");' +
 '            isFlipped = false;' +
 '        }' +
 '        ' +
 '        function flipCard() {' +
-'            document.getElementById("flashcard").classList.toggle("flipped");' +
+'            document.getElementById(\"flashcard\").classList.toggle(\"flipped\");' +
 '            isFlipped = !isFlipped;' +
 '        }' +
 '        ' +
@@ -555,5 +556,10 @@ export const generateCreatorExportCode = (): string => {
         updateCardsList();
     </script>
 </body>
-</html>`;
+</html>" 
+  width="100%" 
+  height="1500px" 
+  frameborder="0" 
+  style="border: none; border-radius: 8px;">
+</iframe>`;
 };
