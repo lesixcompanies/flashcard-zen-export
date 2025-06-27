@@ -406,7 +406,7 @@ export const generateExportCode = (cards: FlashcardData[], customization: Custom
   const encodedContent = encodeURIComponent(flashcardContent);
 
   // Return the iframe-based code that GoHighLevel won't strip
-  return `<div style="width: 100%; height: 600px; border: none; border-radius: 8px; overflow: hidden;">
+  return `<div style="width: 100%; height: 500px; border: none; border-radius: 8px; overflow: hidden;">
     <iframe 
         src="data:text/html;charset=utf-8,${encodedContent}"
         style="width: 100%; height: 100%; border: none; border-radius: 8px;"
