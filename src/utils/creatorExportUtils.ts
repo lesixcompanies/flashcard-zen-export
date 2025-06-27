@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+
+export const generateCreatorExportCode = (): string => {
+  const creatorHTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcard Creator</title>
+    <title>Flashcard Creator & Export System</title>
     <style>
         * {
             margin: 0;
@@ -220,7 +222,6 @@
             word-break: break-all;
         }
 
-        /* Custom scrollbar for cards list */
         .cards-list::-webkit-scrollbar {
             width: 8px;
         }
@@ -266,7 +267,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Flashcard Creator</h1>
+            <h1>Flashcard Creator & Export System</h1>
             <p>Create and manage your flashcards, then export them for GoHighLevel</p>
         </div>
 
@@ -386,26 +387,26 @@
 
         function renderCards() {
             const cardsList = document.getElementById('cardsList');
-            cardsList.innerHTML = cards.map((card, index) => `
+            cardsList.innerHTML = cards.map((card, index) => \`
                 <div class="card-item">
                     <div class="card-item-grid">
                         <div>
-                            <label class="label" style="color: #3b82f6;">Term #${index + 1}</label>
-                            <input class="input" value="${escapeHtml(card.term)}" onchange="updateCard('${card.id}', 'term', this.value)">
+                            <label class="label" style="color: #3b82f6;">Term #\${index + 1}</label>
+                            <input class="input" value="\${escapeHtml(card.term)}" onchange="updateCard('\${card.id}', 'term', this.value)">
                         </div>
                         <div>
                             <label class="label" style="color: #7c3aed;">Definition</label>
-                            <textarea class="textarea" onchange="updateCard('${card.id}', 'definition', this.value)">${escapeHtml(card.definition)}</textarea>
+                            <textarea class="textarea" onchange="updateCard('\${card.id}', 'definition', this.value)">\${escapeHtml(card.definition)}</textarea>
                         </div>
                     </div>
                     <div class="card-actions">
-                        <span class="card-number">Card ${index + 1}</span>
-                        <button class="btn btn-danger" onclick="deleteCard('${card.id}')">
+                        <span class="card-number">Card \${index + 1}</span>
+                        <button class="btn btn-danger" onclick="deleteCard('\${card.id}')">
                             🗑️ Delete
                         </button>
                     </div>
                 </div>
-            `).join('');
+            \`).join('');
         }
 
         function escapeHtml(text) {
@@ -453,11 +454,11 @@
             
             if (!bulkText) return;
 
-            const lines = bulkText.split('\n').filter(line => line.trim());
+            const lines = bulkText.split('\\n').filter(line => line.trim());
             const newCards = [];
 
             lines.forEach(line => {
-                const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+                const parts = line.includes('\\t') ? line.split('\\t') : line.split(',');
                 if (parts.length >= 2) {
                     newCards.push({
                         id: Date.now().toString() + Math.random(),
@@ -471,9 +472,9 @@
                 cards = [...cards, ...newCards];
                 document.getElementById('bulk').value = '';
                 updateUI();
-                alert(`Imported ${newCards.length} cards successfully!`);
+                alert(\`Imported \${newCards.length} cards successfully!\`);
             } else {
-                alert('No valid cards found. Use format: Term\tDefinition or Term,Definition');
+                alert('No valid cards found. Use format: Term\\tDefinition or Term,Definition');
             }
         }
 
@@ -527,23 +528,8 @@
 
         function generateFlashcardCode(cards, customization) {
             const cardsJson = JSON.stringify(cards);
-            const configJson = JSON.stringify(customization);
 
-            return `<div style="width: 100%; height: 750px; border: none; border-radius: 8px; overflow: hidden;">
-    <iframe 
-        src="data:text/html;charset=utf-8,${encodeURIComponent(generateFlashcardHTML(cards, customization))}"
-        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
-        frameborder="0"
-        scrolling="no"
-        allowfullscreen>
-    </iframe>
-</div>`;
-        }
-
-        function generateFlashcardHTML(cards, customization) {
-            const cardsJson = JSON.stringify(cards);
-
-            return `<!DOCTYPE html>
+            const flashcardHTML = \`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -552,9 +538,9 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: ${customization.typography.fontFamily};
-            background: ${customization.colors.background};
-            color: ${customization.colors.text};
+            font-family: \${customization.typography.fontFamily};
+            background: \${customization.colors.background};
+            color: \${customization.colors.text};
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -607,7 +593,7 @@
             perspective: 1000px;
             width: 100%;
             max-width: 600px;
-            height: ${customization.dimensions.cardHeight};
+            height: \${customization.dimensions.cardHeight};
             cursor: pointer;
             user-select: none;
         }
@@ -627,9 +613,9 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            background: ${customization.colors.cardBg};
-            color: ${customization.colors.cardText};
-            border-radius: ${customization.dimensions.borderRadius};
+            background: \${customization.colors.cardBg};
+            color: \${customization.colors.cardText};
+            border-radius: \${customization.dimensions.borderRadius};
             display: flex;
             align-items: center;
             justify-content: center;
@@ -644,13 +630,13 @@
             width: 100%;
         }
         .card-term {
-            font-size: ${customization.typography.termSize};
+            font-size: \${customization.typography.termSize};
             font-weight: 600;
             margin-bottom: 1rem;
             line-height: 1.3;
         }
         .card-definition {
-            font-size: ${customization.typography.definitionSize};
+            font-size: \${customization.typography.definitionSize};
             line-height: 1.5;
             margin-bottom: 1rem;
         }
@@ -709,20 +695,18 @@
             <h1>Flashcard Study</h1>
             <div class="counter" id="counter">Card 1 of 0</div>
         </div>
-
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
         </div>
-
         <div class="card-wrapper">
             <div class="card-container" id="cardContainer">
                 <div class="card-inner" id="cardInner">
                     <div class="card-face card-front">
                         <div class="card-content">
                             <div class="card-term" id="cardTerm">Loading...</div>
-                            <div class="card-hint" style="color: ${customization.colors.primary}">
+                            <div class="card-hint" style="color: \${customization.colors.primary}">
                                 Click to reveal answer
                             </div>
                         </div>
@@ -730,7 +714,7 @@
                     <div class="card-face card-back">
                         <div class="card-content">
                             <div class="card-definition" id="cardDefinition">Loading...</div>
-                            <div class="card-hint" style="color: ${customization.colors.secondary}">
+                            <div class="card-hint" style="color: \${customization.colors.secondary}">
                                 Click to see question
                             </div>
                         </div>
@@ -738,21 +722,18 @@
                 </div>
             </div>
         </div>
-
         <div class="controls">
             <button class="btn" id="prevBtn">Previous</button>
             <button class="btn" id="nextBtn">Next</button>
             <button class="btn" id="shuffleBtn">Shuffle</button>
             <button class="btn" id="restartBtn">Restart</button>
         </div>
-
         <div class="keyboard-hints">
             Use ← → arrow keys to navigate • Space to flip cards
         </div>
     </div>
-
     <script>
-        const flashcards = ${cardsJson};
+        const flashcards = \${cardsJson};
         let currentIndex = 0;
         let isFlipped = false;
         let studyCards = [...flashcards];
@@ -790,7 +771,7 @@
         
         function updateUI() {
             if (studyCards.length === 0) return;
-            counter.textContent = \`Card \${currentIndex + 1} of \${studyCards.length}\`;
+            counter.textContent = \\\`Card \\\${currentIndex + 1} of \\\${studyCards.length}\\\`;
             const progress = ((currentIndex + 1) / studyCards.length) * 100;
             progressFill.style.width = progress + '%';
             const hasMultipleCards = studyCards.length > 1;
@@ -859,7 +840,17 @@
         init();
     </script>
 </body>
-</html>`;
+</html>\`;
+
+            return \`<div style="width: 100%; height: 750px; border: none; border-radius: 8px; overflow: hidden;">
+    <iframe 
+        src="data:text/html;charset=utf-8,\${encodeURIComponent(flashcardHTML)}"
+        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen>
+    </iframe>
+</div>\`;
         }
 
         function copyToClipboard() {
@@ -871,8 +862,19 @@
             });
         }
 
-        // Initialize
         updateUI();
     </script>
 </body>
-</html>
+</html>`;
+
+  // Return the iframe-based code for GoHighLevel
+  return `<div style="width: 100%; height: 1500px; border: none; border-radius: 8px; overflow: hidden;">
+    <iframe 
+        src="data:text/html;charset=utf-8,${encodeURIComponent(creatorHTML)}"
+        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen>
+    </iframe>
+</div>`;
+};
