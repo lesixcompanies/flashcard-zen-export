@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,18 +14,23 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-            min-height: 100vh;
+            height: 1500px;
+            overflow: hidden;
             padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            height: calc(1500px - 40px);
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             text-align: center;
             margin-bottom: 30px;
+            flex-shrink: 0;
         }
 
         .header h1 {
@@ -46,6 +50,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             padding: 24px;
             margin-bottom: 24px;
+            flex-shrink: 0;
         }
 
         .card-header {
@@ -138,9 +143,17 @@
             width: 100%;
         }
 
+        .cards-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
         .cards-list {
-            max-height: 600px;
+            flex: 1;
             overflow-y: auto;
+            padding-right: 8px;
         }
 
         .card-item {
@@ -188,6 +201,7 @@
         }
 
         .export-section {
+            flex-shrink: 0;
             margin-top: 30px;
             padding-top: 30px;
             border-top: 2px solid #e5e7eb;
@@ -206,7 +220,35 @@
             word-break: break-all;
         }
 
+        /* Custom scrollbar for cards list */
+        .cards-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .cards-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .cards-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .cards-list::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                height: 1500px;
+            }
+            
+            .container {
+                height: calc(1500px - 20px);
+            }
+            
             .grid-2 {
                 grid-template-columns: 1fr;
             }
@@ -263,20 +305,22 @@
         </div>
 
         <!-- Card Management -->
-        <div class="card">
-            <div class="card-header">
-                📚 Your Cards <span class="counter" id="cardCounter">0</span>
-                <div style="margin-left: auto;">
-                    <button class="btn btn-danger" onclick="clearAllCards()" id="clearBtn" style="display: none;">
-                        🗑️ Clear All
-                    </button>
+        <div class="cards-section">
+            <div class="card">
+                <div class="card-header">
+                    📚 Your Cards <span class="counter" id="cardCounter">0</span>
+                    <div style="margin-left: auto;">
+                        <button class="btn btn-danger" onclick="clearAllCards()" id="clearBtn" style="display: none;">
+                            🗑️ Clear All
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <div id="cardsList" class="cards-list">
-                <div class="empty-state" id="emptyState">
-                    <p style="font-size: 1.2rem; margin-bottom: 8px;">No cards created yet</p>
-                    <p>Add your first card using the form above</p>
+                
+                <div id="cardsList" class="cards-list">
+                    <div class="empty-state" id="emptyState">
+                        <p style="font-size: 1.2rem; margin-bottom: 8px;">No cards created yet</p>
+                        <p>Add your first card using the form above</p>
+                    </div>
                 </div>
             </div>
         </div>
