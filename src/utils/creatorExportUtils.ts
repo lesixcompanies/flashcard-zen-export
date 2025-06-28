@@ -220,6 +220,29 @@ export const generateCreatorExportCode = (): string => {
             overflow-y: auto;
             margin: 10px 0;
         }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
     </style>
 </head>
 <body>
@@ -243,7 +266,9 @@ export const generateCreatorExportCode = (): string => {
                             <textarea id='backText' rows='3' placeholder='Enter the answer or explanation...'></textarea>
                         </div>
                         <button class='btn' onclick='addCard()'>Add Card</button>
-                        <button class='btn btn-secondary' onclick='importCards()'>Bulk Import</button>
+                        <input type='file' id='csvFileInput' class='file-input' accept='.csv,.txt' onchange='handleFileImport(event)'>
+                        <button class='btn btn-secondary' onclick='triggerFileImport()'>Upload CSV File</button>
+                        <div id='importAlert' style='display: none;'></div>
                     </div>
                     
                     <div class='section'>
@@ -311,6 +336,7 @@ export const generateCreatorExportCode = (): string => {
                     <h3>Your Export Code:</h3>
                     <div id='exportCode' class='export-code'></div>
                     <button class='btn btn-secondary' onclick='copyExportCode()'>Copy Code</button>
+                    <div id='copyAlert' style='display: none;'></div>
                     <p style='margin-top: 10px; font-size: 14px; color: #6b7280;'>
                         Copy this code and paste it into your website or learning platform.
                     </p>
@@ -328,7 +354,7 @@ export const generateCreatorExportCode = (): string => {
             const backText = document.getElementById('backText').value.trim();
             
             if (!frontText || !backText) {
-                alert('Please fill in both front and back text.');
+                showAlert('importAlert', 'Please fill in both front and back text.', 'error');
                 return;
             }
             
@@ -343,17 +369,57 @@ export const generateCreatorExportCode = (): string => {
             
             updateCardsList();
             updatePreview();
+            showAlert('importAlert', 'Card added successfully!', 'success');
         }
         
-        function importCards() {
-            const input = prompt('Paste your cards in this format: Front|Back (each card on a new line, separated by |)');
-            if (!input) return;
+        function triggerFileImport() {
+            document.getElementById('csvFileInput').click();
+        }
+        
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             
-            const lines = input.split('\\n').filter(line => line.trim());
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parseCSVContent(content);
+            };
+            reader.readAsText(file);
+        }
+        
+        function parseCSVContent(content) {
+            const lines = content.split('\\n').filter(line => line.trim());
             let imported = 0;
+            let hasHeader = false;
             
-            lines.forEach(line => {
-                const parts = line.split('|');
+            // Check if first line might be a header
+            if (lines.length > 0) {
+                const firstLine = lines[0].toLowerCase();
+                if (firstLine.includes('front') || firstLine.includes('question') || 
+                    firstLine.includes('term') || firstLine.includes('back') || 
+                    firstLine.includes('answer') || firstLine.includes('definition')) {
+                    hasHeader = true;
+                }
+            }
+            
+            const startIndex = hasHeader ? 1 : 0;
+            
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // Support both comma and pipe separation
+                let parts;
+                if (line.includes('|')) {
+                    parts = line.split('|');
+                } else if (line.includes(',')) {
+                    // Simple CSV parsing - handles basic cases
+                    parts = parseCSVLine(line);
+                } else {
+                    continue;
+                }
+                
                 if (parts.length >= 2) {
                     cards.push({
                         front: parts[0].trim(),
@@ -362,11 +428,51 @@ export const generateCreatorExportCode = (): string => {
                     });
                     imported++;
                 }
-            });
+            }
             
-            alert('Imported ' + imported + ' cards!');
-            updateCardsList();
-            updatePreview();
+            if (imported > 0) {
+                updateCardsList();
+                updatePreview();
+                showAlert('importAlert', 'Imported ' + imported + ' cards successfully!', 'success');
+            } else {
+                showAlert('importAlert', 'No valid cards found. Please check your file format.', 'error');
+            }
+            
+            // Clear file input
+            document.getElementById('csvFileInput').value = '';
+        }
+        
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current);
+            return result.map(item => item.replace(/^"|"$/g, ''));
+        }
+        
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.className = 'alert alert-' + type;
+            container.textContent = message;
+            container.style.display = 'block';
+            
+            setTimeout(function() {
+                container.style.display = 'none';
+            }, 5000);
         }
         
         function deleteCard(id) {
@@ -402,12 +508,18 @@ export const generateCreatorExportCode = (): string => {
             
             container.innerHTML = cards.map(card => 
                 '<div class="card-item">' +
-                    '<h3>' + card.front + '</h3>' +
-                    '<p>' + card.back + '</p>' +
+                    '<h3>' + escapeHtml(card.front) + '</h3>' +
+                    '<p>' + escapeHtml(card.back) + '</p>' +
                     '<button class="btn btn-secondary" onclick="editCard(' + card.id + ')">Edit</button>' +
                     '<button class="btn btn-danger" onclick="deleteCard(' + card.id + ')">Delete</button>' +
                 '</div>'
             ).join('');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
         
         function updatePreview() {
@@ -432,7 +544,7 @@ export const generateCreatorExportCode = (): string => {
         
         function generateExportCode() {
             if (cards.length === 0) {
-                alert('Please add some cards first!');
+                showAlert('copyAlert', 'Please add some cards first!', 'error');
                 return;
             }
             
@@ -442,10 +554,7 @@ export const generateCreatorExportCode = (): string => {
             const textColor = document.getElementById('textColor').value;
             const fontSize = document.getElementById('fontSize').value;
             
-            // Build the complete flashcard HTML with proper escaping
             const flashcardHtml = generateFlashcardHtml(cards, bgColor, textColor, fontSize);
-            
-            // Encode and create iframe
             const encodedContent = encodeURIComponent(flashcardHtml);
             const exportCode = '<div style="width: 100%; height: 750px; border: none; border-radius: 8px; overflow: hidden;"><iframe src="data:text/html;charset=utf-8,' + encodedContent + '" style="width: 100%; height: 100%; border: none; border-radius: 8px;" frameborder="0" scrolling="no" allowfullscreen></iframe></div>';
             
@@ -455,16 +564,54 @@ export const generateCreatorExportCode = (): string => {
         }
         
         function generateFlashcardHtml(cardsData, bgColor, textColor, fontSize) {
-            const cardsJson = JSON.stringify(cardsData).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+            const cardsJson = JSON.stringify(cardsData).replace(/</g, '\\\\u003c').replace(/>/g, '\\\\u003e');
             
-            return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Study Flashcards</title><style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; } .container { max-width: 800px; margin: 0 auto; } .header { text-align: center; color: white; margin-bottom: 30px; } .header h1 { font-size: 2.5rem; margin-bottom: 10px; } .flashcard { background: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); min-height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: transform 0.3s; margin-bottom: 20px; padding: 40px; } .flashcard:hover { transform: scale(1.02); } .flashcard.flipped .front { display: none; } .flashcard.flipped .back { display: block; } .back { display: none; } .controls { text-align: center; margin: 20px 0; } .btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 0 5px; cursor: pointer; font-weight: 600; } .btn:hover { transform: translateY(-2px); } .progress { color: white; font-size: 18px; margin-top: 15px; } </style></head><body><div class="container"><div class="header"><h1>📚 Study Time</h1><p>Click cards to flip • Use buttons to navigate</p></div><div id="flashcard" class="flashcard ' + bgColor + ' ' + textColor + ' ' + fontSize + '" onclick="flipCard()"><div class="front"><h2 id="frontText"></h2></div><div class="back"><h2 id="backText"></h2></div></div><div class="controls"><button class="btn" onclick="previousCard()">← Previous</button><button class="btn" onclick="nextCard()">Next →</button><button class="btn" onclick="shuffleCards()">🔀 Shuffle</button></div><div class="progress"><span id="progress">Card 1 of ' + cardsData.length + '</span></div></div><script>const cards = ' + cardsJson + '; let currentCard = 0; let isFlipped = false; function showCard() { document.getElementById("frontText").textContent = cards[currentCard].front; document.getElementById("backText").textContent = cards[currentCard].back; document.getElementById("progress").textContent = "Card " + (currentCard + 1) + " of " + cards.length; document.getElementById("flashcard").classList.remove("flipped"); isFlipped = false; } function flipCard() { document.getElementById("flashcard").classList.toggle("flipped"); isFlipped = !isFlipped; } function nextCard() { currentCard = (currentCard + 1) % cards.length; showCard(); } function previousCard() { currentCard = currentCard === 0 ? cards.length - 1 : currentCard - 1; showCard(); } function shuffleCards() { for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cards[i], cards[j]] = [cards[j], cards[i]]; } currentCard = 0; showCard(); } showCard();<\\/script></body></html>';
+            return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Study Flashcards</title><style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; } .container { max-width: 800px; margin: 0 auto; } .header { text-align: center; color: white; margin-bottom: 30px; } .header h1 { font-size: 2.5rem; margin-bottom: 10px; } .flashcard { background: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); min-height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: transform 0.3s; margin-bottom: 20px; padding: 40px; } .flashcard:hover { transform: scale(1.02); } .flashcard.flipped .front { display: none; } .flashcard.flipped .back { display: block; } .back { display: none; } .controls { text-align: center; margin: 20px 0; } .btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 0 5px; cursor: pointer; font-weight: 600; } .btn:hover { transform: translateY(-2px); } .progress { color: white; font-size: 18px; margin-top: 15px; } </style></head><body><div class="container"><div class="header"><h1>📚 Study Time</h1><p>Click cards to flip • Use buttons to navigate</p></div><div id="flashcard" class="flashcard ' + bgColor + ' ' + textColor + ' ' + fontSize + '" onclick="flipCard()"><div class="front"><h2 id="frontText"></h2></div><div class="back"><h2 id="backText"></h2></div></div><div class="controls"><button class="btn" onclick="previousCard()">← Previous</button><button class="btn" onclick="nextCard()">Next →</button><button class="btn" onclick="shuffleCards()">🔀 Shuffle</button></div><div class="progress"><span id="progress">Card 1 of ' + cardsData.length + '</span></div></div><script>const cards = ' + cardsJson + '; let currentCard = 0; let isFlipped = false; function showCard() { document.getElementById("frontText").textContent = cards[currentCard].front; document.getElementById("backText").textContent = cards[currentCard].back; document.getElementById("progress").textContent = "Card " + (currentCard + 1) + " of " + cards.length; document.getElementById("flashcard").classList.remove("flipped"); isFlipped = false; } function flipCard() { document.getElementById("flashcard").classList.toggle("flipped"); isFlipped = !isFlipped; } function nextCard() { currentCard = (currentCard + 1) % cards.length; showCard(); } function previousCard() { currentCard = currentCard === 0 ? cards.length - 1 : currentCard - 1; showCard(); } function shuffleCards() { for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cards[i], cards[j]] = [cards[j], cards[i]]; } currentCard = 0; showCard(); } showCard();</script></body></html>';
         }
         
         function copyExportCode() {
             const code = document.getElementById('exportCode').textContent;
-            navigator.clipboard.writeText(code).then(function() {
-                alert('Code copied to clipboard!');
-            });
+            
+            if (!code) {
+                showAlert('copyAlert', 'No code to copy. Please generate export code first.', 'error');
+                return;
+            }
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(function() {
+                    showAlert('copyAlert', 'Code copied to clipboard successfully!', 'success');
+                }).catch(function(err) {
+                    fallbackCopyTextToClipboard(code);
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyTextToClipboard(code);
+            }
+        }
+        
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showAlert('copyAlert', 'Code copied to clipboard successfully!', 'success');
+                } else {
+                    showAlert('copyAlert', 'Failed to copy code. Please select and copy manually.', 'error');
+                }
+            } catch (err) {
+                showAlert('copyAlert', 'Copy not supported. Please select and copy manually.', 'error');
+            }
+            
+            document.body.removeChild(textArea);
         }
         
         updateCardsList();
@@ -472,10 +619,8 @@ export const generateCreatorExportCode = (): string => {
 </body>
 </html>`;
 
-  // Encode the content for the data URL
   const encodedContent = encodeURIComponent(flashcardCreatorHtml);
 
-  // Return the iframe-based code that GoHighLevel won't strip
   return `<div style="width: 100%; height: 1500px; border: none; border-radius: 8px; overflow: hidden;">
     <iframe 
         src="data:text/html;charset=utf-8,${encodedContent}"
