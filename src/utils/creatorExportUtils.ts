@@ -364,7 +364,7 @@ export const generateCreatorExportCode = (): string => {
                 }
             });
             
-            alert("Imported " + imported + " cards!");
+            alert('Imported ' + imported + ' cards!');
             updateCardsList();
             updatePreview();
         }
@@ -396,17 +396,17 @@ export const generateCreatorExportCode = (): string => {
             const container = document.getElementById('cardsList');
             
             if (cards.length === 0) {
-                container.innerHTML = "<p style='text-align: center; color: #6b7280;'>No cards created yet. Add your first card above!</p>";
+                container.innerHTML = '<p style="text-align: center; color: #6b7280;">No cards created yet. Add your first card above!</p>';
                 return;
             }
             
             container.innerHTML = cards.map(card => 
-                "<div class='card-item'>" +
-                    "<h3>" + card.front + "</h3>" +
-                    "<p>" + card.back + "</p>" +
-                    "<button class='btn btn-secondary' onclick='editCard(" + card.id + ")'>Edit</button>" +
-                    "<button class='btn btn-danger' onclick='deleteCard(" + card.id + ")'>Delete</button>" +
-                "</div>"
+                '<div class="card-item">' +
+                    '<h3>' + card.front + '</h3>' +
+                    '<p>' + card.back + '</p>' +
+                    '<button class="btn btn-secondary" onclick="editCard(' + card.id + ')">Edit</button>' +
+                    '<button class="btn btn-danger" onclick="deleteCard(' + card.id + ')">Delete</button>' +
+                '</div>'
             ).join('');
         }
         
@@ -419,7 +419,7 @@ export const generateCreatorExportCode = (): string => {
             const fontSize = document.getElementById('fontSize').value;
             
             const previewCard = document.getElementById('previewCard');
-            previewCard.className = "preview-card " + bgColor + " " + textColor + " " + fontSize;
+            previewCard.className = 'preview-card ' + bgColor + ' ' + textColor + ' ' + fontSize;
             
             previewCard.querySelector('.card-front h3').textContent = card.front;
             previewCard.querySelector('.card-back h3').textContent = card.back;
@@ -442,10 +442,10 @@ export const generateCreatorExportCode = (): string => {
             const textColor = document.getElementById('textColor').value;
             const fontSize = document.getElementById('fontSize').value;
             
-            const flashcardHtml = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Study Flashcards</title><style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; } .container { max-width: 800px; margin: 0 auto; } .header { text-align: center; color: white; margin-bottom: 30px; } .header h1 { font-size: 2.5rem; margin-bottom: 10px; } .flashcard { background: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); min-height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: transform 0.3s; margin-bottom: 20px; padding: 40px; } .flashcard:hover { transform: scale(1.02); } .flashcard.flipped .front { display: none; } .flashcard.flipped .back { display: block; } .back { display: none; } .controls { text-align: center; margin: 20px 0; } .btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 0 5px; cursor: pointer; font-weight: 600; } .btn:hover { transform: translateY(-2px); } .progress { color: white; font-size: 18px; margin-top: 15px; } </style></head><body><div class='container'><div class='header'><h1>📚 Study Time</h1><p>Click cards to flip • Use buttons to navigate</p></div><div id='flashcard' class='flashcard " + bgColor + " " + textColor + " " + fontSize + "' onclick='flipCard()'><div class='front'><h2 id='frontText'></h2></div><div class='back'><h2 id='backText'></h2></div></div><div class='controls'><button class='btn' onclick='previousCard()'>← Previous</button><button class='btn' onclick='nextCard()'>Next →</button><button class='btn' onclick='shuffleCards()'>🔀 Shuffle</button></div><div class='progress'><span id='progress'>Card 1 of " + cards.length + "</span></div></div><script>const cards = " + JSON.stringify(cards) + "; let currentCard = 0; let isFlipped = false; function showCard() { document.getElementById('frontText').textContent = cards[currentCard].front; document.getElementById('backText').textContent = cards[currentCard].back; document.getElementById('progress').textContent = 'Card ' + (currentCard + 1) + ' of ' + cards.length; document.getElementById('flashcard').classList.remove('flipped'); isFlipped = false; } function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); isFlipped = !isFlipped; } function nextCard() { currentCard = (currentCard + 1) % cards.length; showCard(); } function previousCard() { currentCard = currentCard === 0 ? cards.length - 1 : currentCard - 1; showCard(); } function shuffleCards() { for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cards[i], cards[j]] = [cards[j], cards[i]]; } currentCard = 0; showCard(); } showCard();</script></body></html>";
+            const flashcardHtml = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Study Flashcards</title><style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; } .container { max-width: 800px; margin: 0 auto; } .header { text-align: center; color: white; margin-bottom: 30px; } .header h1 { font-size: 2.5rem; margin-bottom: 10px; } .flashcard { background: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); min-height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: transform 0.3s; margin-bottom: 20px; padding: 40px; } .flashcard:hover { transform: scale(1.02); } .flashcard.flipped .front { display: none; } .flashcard.flipped .back { display: block; } .back { display: none; } .controls { text-align: center; margin: 20px 0; } .btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 0 5px; cursor: pointer; font-weight: 600; } .btn:hover { transform: translateY(-2px); } .progress { color: white; font-size: 18px; margin-top: 15px; } </style></head><body><div class="container"><div class="header"><h1>📚 Study Time</h1><p>Click cards to flip • Use buttons to navigate</p></div><div id="flashcard" class="flashcard ' + bgColor + ' ' + textColor + ' ' + fontSize + '" onclick="flipCard()"><div class="front"><h2 id="frontText"></h2></div><div class="back"><h2 id="backText"></h2></div></div><div class="controls"><button class="btn" onclick="previousCard()">← Previous</button><button class="btn" onclick="nextCard()">Next →</button><button class="btn" onclick="shuffleCards()">🔀 Shuffle</button></div><div class="progress"><span id="progress">Card 1 of ' + cards.length + '</span></div></div><script>const cards = ' + JSON.stringify(cards) + '; let currentCard = 0; let isFlipped = false; function showCard() { document.getElementById("frontText").textContent = cards[currentCard].front; document.getElementById("backText").textContent = cards[currentCard].back; document.getElementById("progress").textContent = "Card " + (currentCard + 1) + " of " + cards.length; document.getElementById("flashcard").classList.remove("flipped"); isFlipped = false; } function flipCard() { document.getElementById("flashcard").classList.toggle("flipped"); isFlipped = !isFlipped; } function nextCard() { currentCard = (currentCard + 1) % cards.length; showCard(); } function previousCard() { currentCard = currentCard === 0 ? cards.length - 1 : currentCard - 1; showCard(); } function shuffleCards() { for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cards[i], cards[j]] = [cards[j], cards[i]]; } currentCard = 0; showCard(); } showCard();<\/script></body></html>';
             
             const encodedContent = encodeURIComponent(flashcardHtml);
-            const exportCode = "<div style='width: 100%; height: 750px; border: none; border-radius: 8px; overflow: hidden;'><iframe src='data:text/html;charset=utf-8," + encodedContent + "' style='width: 100%; height: 100%; border: none; border-radius: 8px;' frameborder='0' scrolling='no' allowfullscreen></iframe></div>";
+            const exportCode = '<div style="width: 100%; height: 750px; border: none; border-radius: 8px; overflow: hidden;"><iframe src="data:text/html;charset=utf-8,' + encodedContent + '" style="width: 100%; height: 100%; border: none; border-radius: 8px;" frameborder="0" scrolling="no" allowfullscreen></iframe></div>';
             
             document.getElementById('exportCode').textContent = exportCode;
             document.getElementById('exportResult').style.display = 'block';
@@ -467,7 +467,7 @@ export const generateCreatorExportCode = (): string => {
   // Encode the content for the data URL
   const encodedContent = encodeURIComponent(flashcardCreatorHtml);
 
-  // Return the iframe-based code that GoHighLevel won't strip (same format as exportUtils.ts)
+  // Return the iframe-based code that GoHighLevel won't strip
   return `<div style="width: 100%; height: 1500px; border: none; border-radius: 8px; overflow: hidden;">
     <iframe 
         src="data:text/html;charset=utf-8,${encodedContent}"
