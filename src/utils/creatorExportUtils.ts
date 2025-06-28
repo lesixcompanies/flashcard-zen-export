@@ -18,7 +18,6 @@ export const generateCreatorExportCode = (): string => {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
-            min-height: 100vh;
             overflow-y: auto;
         }
         
@@ -241,7 +240,7 @@ export const generateCreatorExportCode = (): string => {
                         </div>
                         <div class='form-group'>
                             <label for='backText'>Back Text:</label>
-                            <textarea id='backText' rows='3' placeholder='Enter the answer or explanation...'></textarea>
+                            <textarea id='frontText' rows='3' placeholder='Enter the answer or explanation...'></textarea>
                         </div>
                         <button class='btn' onclick='addCard()'>Add Card</button>
                         <button class='btn btn-secondary' onclick='importCards()'>Bulk Import</button>
@@ -284,7 +283,7 @@ export const generateCreatorExportCode = (): string => {
                         <h2>👀 Preview</h2>
                         <div id='previewCard' class='preview-card' onclick='flipPreviewCard()'>
                             <div class='card-front'>
-                                <h3>Click 'Add Card' to see preview</h3>
+                                <h3>Click Add Card to see preview</h3>
                                 <p>Front side will appear here</p>
                             </div>
                             <div class='card-back'>
@@ -347,7 +346,7 @@ export const generateCreatorExportCode = (): string => {
         }
         
         function importCards() {
-            const input = prompt('Paste your cards in this format:\\nFront|Back\\nFront2|Back2\\n(Each card on a new line, separated by |)');
+            const input = prompt('Paste your cards in this format: Front|Back (each card on a new line, separated by |)');
             if (!input) return;
             
             const lines = input.split('\\n').filter(line => line.trim());
@@ -397,16 +396,16 @@ export const generateCreatorExportCode = (): string => {
             const container = document.getElementById('cardsList');
             
             if (cards.length === 0) {
-                container.innerHTML = '<p style=\"text-align: center; color: #6b7280;\">No cards created yet. Add your first card above!</p>';
+                container.innerHTML = '<p style=\\\"text-align: center; color: #6b7280;\\\">No cards created yet. Add your first card above!</p>';
                 return;
             }
             
             container.innerHTML = cards.map(card => 
-                '<div class=\"card-item\">' +
+                '<div class=\\\"card-item\\\">' +
                     '<h3>' + card.front + '</h3>' +
                     '<p>' + card.back + '</p>' +
-                    '<button class=\"btn btn-secondary\" onclick=\"editCard(' + card.id + ')\">Edit</button>' +
-                    '<button class=\"btn btn-danger\" onclick=\"deleteCard(' + card.id + ')\">Delete</button>' +
+                    '<button class=\\\"btn btn-secondary\\\" onclick=\\\"editCard(' + card.id + ')\\\">Edit</button>' +
+                    '<button class=\\\"btn btn-danger\\\" onclick=\\\"deleteCard(' + card.id + ')\\\">Delete</button>' +
                 '</div>'
             ).join('');
         }
@@ -443,104 +442,9 @@ export const generateCreatorExportCode = (): string => {
             const textColor = document.getElementById('textColor').value;
             const fontSize = document.getElementById('fontSize').value;
             
-            const flashcardContent = '<!DOCTYPE html>' +
-'<html lang=\"en\">' +
-'<head>' +
-'    <meta charset=\"UTF-8\">' +
-'    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">' +
-'    <title>Study Flashcards</title>' +
-'    <style>' +
-'        * { margin: 0; padding: 0; box-sizing: border-box; }' +
-'        body { ' +
-'            font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;' +
-'            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);' +
-'            min-height: 100vh; padding: 20px;' +
-'        }' +
-'        .container { max-width: 800px; margin: 0 auto; }' +
-'        .header { text-align: center; color: white; margin-bottom: 30px; }' +
-'        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }' +
-'        .flashcard { ' +
-'            background: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);' +
-'            min-height: 300px; display: flex; align-items: center; justify-content: center;' +
-'            text-align: center; cursor: pointer; transition: transform 0.3s;' +
-'            margin-bottom: 20px; padding: 40px;' +
-'        }' +
-'        .flashcard:hover { transform: scale(1.02); }' +
-'        .flashcard.flipped .front { display: none; }' +
-'        .flashcard.flipped .back { display: block; }' +
-'        .back { display: none; }' +
-'        .controls { text-align: center; margin: 20px 0; }' +
-'        .btn { ' +
-'            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);' +
-'            color: white; border: none; padding: 12px 24px; border-radius: 8px;' +
-'            font-size: 16px; margin: 0 5px; cursor: pointer; font-weight: 600;' +
-'        }' +
-'        .btn:hover { transform: translateY(-2px); }' +
-'        .progress { color: white; font-size: 18px; margin-top: 15px; }' +
-'    </style>' +
-'</head>' +
-'<body>' +
-'    <div class=\"container\">' +
-'        <div class=\"header\">' +
-'            <h1>📚 Study Time</h1>' +
-'            <p>Click cards to flip • Use buttons to navigate</p>' +
-'        </div>' +
-'        <div id=\"flashcard\" class=\"flashcard ' + bgColor + ' ' + textColor + ' ' + fontSize + '\" onclick=\"flipCard()\">' +
-'            <div class=\"front\"><h2 id=\"frontText\"></h2></div>' +
-'            <div class=\"back\"><h2 id=\"backText\"></h2></div>' +
-'        </div>' +
-'        <div class=\"controls\">' +
-'            <button class=\"btn\" onclick=\"previousCard()\">← Previous</button>' +
-'            <button class=\"btn\" onclick=\"nextCard()\">Next →</button>' +
-'            <button class=\"btn\" onclick=\"shuffleCards()\">🔀 Shuffle</button>' +
-'        </div>' +
-'        <div class=\"progress\">' +
-'            <span id=\"progress\">Card 1 of ' + cards.length + '</span>' +
-'        </div>' +
-'    </div>' +
-'    <script>' +
-'        const cards = ' + JSON.stringify(cards) + ';' +
-'        let currentCard = 0;' +
-'        let isFlipped = false;' +
-'        ' +
-'        function showCard() {' +
-'            document.getElementById(\"frontText\").textContent = cards[currentCard].front;' +
-'            document.getElementById(\"backText\").textContent = cards[currentCard].back;' +
-'            document.getElementById(\"progress\").textContent = \"Card \" + (currentCard + 1) + \" of \" + cards.length;' +
-'            document.getElementById(\"flashcard\").classList.remove(\"flipped\");' +
-'            isFlipped = false;' +
-'        }' +
-'        ' +
-'        function flipCard() {' +
-'            document.getElementById(\"flashcard\").classList.toggle(\"flipped\");' +
-'            isFlipped = !isFlipped;' +
-'        }' +
-'        ' +
-'        function nextCard() {' +
-'            currentCard = (currentCard + 1) % cards.length;' +
-'            showCard();' +
-'        }' +
-'        ' +
-'        function previousCard() {' +
-'            currentCard = currentCard === 0 ? cards.length - 1 : currentCard - 1;' +
-'            showCard();' +
-'        }' +
-'        ' +
-'        function shuffleCards() {' +
-'            for (let i = cards.length - 1; i > 0; i--) {' +
-'                const j = Math.floor(Math.random() * (i + 1));' +
-'                [cards[i], cards[j]] = [cards[j], cards[i]];' +
-'            }' +
-'            currentCard = 0;' +
-'            showCard();' +
-'        }' +
-'        ' +
-'        showCard();' +
-'    </script>' +
-'</body>' +
-'</html>';
+            const flashcardHtml = '<!DOCTYPE html><html><head><meta charset=\\\"UTF-8\\\"><title>Study Flashcards</title><style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, \\\"Segoe UI\\\", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; } .container { max-width: 800px; margin: 0 auto; } .header { text-align: center; color: white; margin-bottom: 30px; } .header h1 { font-size: 2.5rem; margin-bottom: 10px; } .flashcard { background: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); min-height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: transform 0.3s; margin-bottom: 20px; padding: 40px; } .flashcard:hover { transform: scale(1.02); } .flashcard.flipped .front { display: none; } .flashcard.flipped .back { display: block; } .back { display: none; } .controls { text-align: center; margin: 20px 0; } .btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; margin: 0 5px; cursor: pointer; font-weight: 600; } .btn:hover { transform: translateY(-2px); } .progress { color: white; font-size: 18px; margin-top: 15px; } </style></head><body><div class=\\\"container\\\"><div class=\\\"header\\\"><h1>📚 Study Time</h1><p>Click cards to flip • Use buttons to navigate</p></div><div id=\\\"flashcard\\\" class=\\\"flashcard ' + bgColor + ' ' + textColor + ' ' + fontSize + '\\\" onclick=\\\"flipCard()\\\"><div class=\\\"front\\\"><h2 id=\\\"frontText\\\"></h2></div><div class=\\\"back\\\"><h2 id=\\\"backText\\\"></h2></div></div><div class=\\\"controls\\\"><button class=\\\"btn\\\" onclick=\\\"previousCard()\\\">← Previous</button><button class=\\\"btn\\\" onclick=\\\"nextCard()\\\">Next →</button><button class=\\\"btn\\\" onclick=\\\"shuffleCards()\\\">🔀 Shuffle</button></div><div class=\\\"progress\\\"><span id=\\\"progress\\\">Card 1 of ' + cards.length + '</span></div></div><script>const cards = ' + JSON.stringify(cards) + '; let currentCard = 0; let isFlipped = false; function showCard() { document.getElementById(\\\"frontText\\\").textContent = cards[currentCard].front; document.getElementById(\\\"backText\\\").textContent = cards[currentCard].back; document.getElementById(\\\"progress\\\").textContent = \\\"Card \\\" + (currentCard + 1) + \\\" of \\\" + cards.length; document.getElementById(\\\"flashcard\\\").classList.remove(\\\"flipped\\\"); isFlipped = false; } function flipCard() { document.getElementById(\\\"flashcard\\\").classList.toggle(\\\"flipped\\\"); isFlipped = !isFlipped; } function nextCard() { currentCard = (currentCard + 1) % cards.length; showCard(); } function previousCard() { currentCard = currentCard === 0 ? cards.length - 1 : currentCard - 1; showCard(); } function shuffleCards() { for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cards[i], cards[j]] = [cards[j], cards[i]]; } currentCard = 0; showCard(); } showCard();</script></body></html>';
             
-            document.getElementById('exportCode').textContent = flashcardContent;
+            document.getElementById('exportCode').textContent = flashcardHtml;
             document.getElementById('exportResult').style.display = 'block';
             document.getElementById('exportBtn').textContent = 'Generate Export Code';
         }
@@ -552,7 +456,6 @@ export const generateCreatorExportCode = (): string => {
             });
         }
         
-        // Initialize the app
         updateCardsList();
     </script>
 </body>
